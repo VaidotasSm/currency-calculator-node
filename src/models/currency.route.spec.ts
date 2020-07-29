@@ -11,7 +11,12 @@ describe('/quote', () => {
         .query({ base_currency: 'EUR1', quote_currency: 'USD', base_amount: 100 });
 
       expect(res.status).toBe(400);
-      expect(res.body).toEqual({ message: 'Not supported currency for "base_currency"' });
+      expect(res.body).toEqual({
+        message: 'Incorrect request',
+        fields: {
+          base_currency: 'Not supported currency for "base_currency"',
+        },
+      });
     });
 
     it('should detect incorrect quote_currency', async () => {
@@ -20,7 +25,12 @@ describe('/quote', () => {
         .query({ base_currency: 'EUR', quote_currency: 'USD1', base_amount: 100 });
 
       expect(res.status).toBe(400);
-      expect(res.body).toEqual({ message: 'Not supported currency for "quote_currency"' });
+      expect(res.body).toEqual({
+        message: 'Incorrect request',
+        fields: {
+          quote_currency: 'Not supported currency for "quote_currency"',
+        },
+      });
     });
 
     it('should detect incorrect base_currency', async () => {
@@ -29,7 +39,12 @@ describe('/quote', () => {
         .query({ base_currency: 'EUR', quote_currency: 'USD', base_amount: 'WRONG AMOUNT' });
 
       expect(res.status).toBe(400);
-      expect(res.body).toEqual({ message: 'Incorrect amount for "base_amount"' });
+      expect(res.body).toEqual({
+        message: 'Incorrect request',
+        fields: {
+          base_amount: 'Incorrect amount for "base_amount"',
+        },
+      });
     });
   });
 
@@ -43,7 +58,7 @@ describe('/quote', () => {
       expect(res.body).toEqual({ exchange_rate: 1, quote_amount: 100 });
     });
 
-    it.only('should convert different currency', async () => {
+    it('should convert different currency', async () => {
       const scope = mockExchangeRateApiCall();
       const res = await request(app)
         .get('/quote')
