@@ -50,8 +50,4 @@ function parseRequestParams(req: Request): { from: SupportedCurrency; to: Suppor
   throw errorFields;
 }
 
-currencyRouter.delete('/cache', () => {
-  clearCache();
-});
-
 export { currencyRouter };

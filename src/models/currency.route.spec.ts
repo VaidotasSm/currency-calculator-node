@@ -2,11 +2,9 @@ import request from 'supertest';
 import nock from 'nock';
 import { app } from '../app';
 import { mockExchangeRateApiCall } from '../lib/test.utils';
-import { clearCache } from './rate.cache';
 
 describe('/quote', () => {
   afterEach(() => {
-    clearCache();
     nock.cleanAll();
   });
 
