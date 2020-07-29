@@ -4,7 +4,7 @@
 * `Node v12+` - although might work with older.
 
 ## Instructions
-* `npm install` - install dependencies.
+* `npm install` - install dependencies (should be enough, but haven't tried fresh clone).
 * `npm test` - run all tests.
 * `npm run dev` - start dev server. Then visit http://localhost:8080/quote?base_amount=100&base_currency=EUR&quote_currency=USD
 * `npm run build` - build code under `./dist`.
