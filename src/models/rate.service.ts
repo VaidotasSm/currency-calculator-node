@@ -16,11 +16,11 @@ export async function convertCurrency(
   from: SupportedCurrency,
   to: SupportedCurrency,
   amountCents: number
-): Promise<{ exchangeRate: number; amount: number }> {
+): Promise<{ exchangeRate: number; amountCents: number }> {
   const rate = await getRate(from, to);
   return {
     exchangeRate: rate,
-    amount: new BigNumber(amountCents).multipliedBy(rate).toNumber(),
+    amountCents: Math.floor(new BigNumber(amountCents).multipliedBy(rate).toNumber()),
   };
 }
 

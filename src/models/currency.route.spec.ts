@@ -72,7 +72,7 @@ describe('/quote', () => {
 
       expect(scope.isDone()).toBe(true);
       expect(res.status).toBe(200);
-      expect(res.body).toEqual({ exchange_rate: 1.1717, quote_amount: 100 * 1.1717 });
+      expect(res.body).toEqual({ exchange_rate: 1.171, quote_amount: 117 });
     });
   });
 });

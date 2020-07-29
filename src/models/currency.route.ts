@@ -1,7 +1,7 @@
-import { Router, Request } from 'express';
+import { Request, Router } from 'express';
 import { isNil } from 'lodash';
-import { isSupportedCurrency, convertCurrency, SupportedCurrency } from './rate.service';
 import { clearCache } from './rate.cache';
+import { convertCurrency, isSupportedCurrency, SupportedCurrency } from './rate.service';
 
 const currencyRouter = Router();
 
@@ -17,10 +17,10 @@ currencyRouter.get('/', async (req, res) => {
   }
 
   const { from, to, amount: amountParam } = parseResult;
-  const { exchangeRate, amount } = await convertCurrency(from, to, amountParam);
+  const { exchangeRate, amountCents } = await convertCurrency(from, to, amountParam);
   return res.status(200).json({
-    exchange_rate: exchangeRate,
-    quote_amount: amount,
+    exchange_rate: Math.floor(exchangeRate * 1000) / 1000,
+    quote_amount: amountCents,
   });
 });
 
