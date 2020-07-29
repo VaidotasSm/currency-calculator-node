@@ -1,9 +1,10 @@
+import config from 'config';
 import moment, { Moment } from 'moment';
 import { get } from '../lib/httpClient';
-import { SupportedCurrency, isSupportedCurrency } from './rate.service';
+import { isSupportedCurrency, SupportedCurrency } from './rate.service';
 
-const API_URL = 'https://api.exchangeratesapi.io/latest';
-const CACHE_DIFF_MINUTES = 60;
+const apiURL: string = config.get('app.exchangeRatesAPI');
+const oldCacheRetryAfterMinutes: number = config.get('app.outdatedCacheRetryMinutes');
 
 export interface CurrencyRates {
   rates: {
@@ -26,7 +27,7 @@ export async function getCurrencyRates(base: SupportedCurrency): Promise<Currenc
     return cached.rates;
   }
 
-  if (cached.updatedAt && now.diff(cached.updatedAt, 'minutes') < CACHE_DIFF_MINUTES) {
+  if (cached.updatedAt && now.diff(cached.updatedAt, 'minutes') < oldCacheRetryAfterMinutes) {
     return cached.rates;
   }
 
@@ -34,7 +35,7 @@ export async function getCurrencyRates(base: SupportedCurrency): Promise<Currenc
 }
 
 async function fetchNewRates(base: SupportedCurrency): Promise<CurrencyRates> {
-  const fullUrl = `${API_URL}?base=${base}`;
+  const fullUrl = `${apiURL}?base=${base}`;
   const { body } = await get<CurrencyRates>(fullUrl);
 
   currencyRatesCache[base] = { rates: body, updatedAt: moment() };

@@ -1,5 +1,7 @@
 {
   "app": {
-    "port": 8080
+    "port": 8080,
+    "exchangeRatesAPI": "https://api.exchangeratesapi.io/latest",
+    "outdatedCacheRetryMinutes": 60
   }
 }
