@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { get } from '../lib/httpClient';
+import { CurrencyRates, getCurrencyRates } from './rate.cache';
 
 export enum SupportedCurrency {
   USD = 'USD',
@@ -8,18 +8,9 @@ export enum SupportedCurrency {
   ILS = 'ILS',
 }
 
-const API_URL = 'https://api.exchangeratesapi.io/latest';
 const BaseCurrency = SupportedCurrency.EUR;
-const fullUrl = `${API_URL}?base=${SupportedCurrency.EUR}`;
 
 const supportedCurrencies = Object.values(SupportedCurrency);
-
-export function isSupportedCurrency(currency: any): currency is SupportedCurrency {
-  if (typeof currency !== 'string') {
-    return false;
-  }
-  return !!supportedCurrencies.find((c) => c === currency);
-}
 
 export async function convertCurrency(
   from: SupportedCurrency,
@@ -34,40 +25,40 @@ export async function convertCurrency(
 }
 
 export async function getRate(from: SupportedCurrency, to: SupportedCurrency): Promise<number> {
-  const { body } = await get<CurrencyRatesResponse>(fullUrl);
   if (from === to) {
     return 1;
   }
+
+  const rates = await getCurrencyRates(BaseCurrency);
   if (from === BaseCurrency) {
-    return fromBase(body, to);
+    return fromBase(rates, to);
   }
   if (to === BaseCurrency) {
-    return toBase(body, from);
+    return toBase(rates, from);
   }
 
-  const rate1b = new BigNumber(toBase(body, from));
-  const rate2b = new BigNumber(toBase(body, to));
-  return rate1b.dividedBy(rate2b).toNumber();
+  const rateFrom = new BigNumber(toBase(rates, from));
+  const rateTo = new BigNumber(toBase(rates, to));
+  return rateFrom.dividedBy(rateTo).toNumber();
 }
 
-function fromBase(rates: CurrencyRatesResponse, to: SupportedCurrency): number {
+function fromBase(rates: CurrencyRates, to: SupportedCurrency): number {
   if (to === BaseCurrency) {
     return 1;
   }
   return rates.rates[to]!;
 }
 
-function toBase(rates: CurrencyRatesResponse, from: SupportedCurrency): number {
+function toBase(rates: CurrencyRates, from: SupportedCurrency): number {
   if (from === BaseCurrency) {
     return 1;
   }
   return 1 / rates.rates[from]!;
 }
 
-interface CurrencyRatesResponse {
-  rates: {
-    [key in SupportedCurrency]?: number;
-  };
-  base: SupportedCurrency;
-  date: string;
+export function isSupportedCurrency(currency: any): currency is SupportedCurrency {
+  if (typeof currency !== 'string') {
+    return false;
+  }
+  return !!supportedCurrencies.find((c) => c === currency);
 }

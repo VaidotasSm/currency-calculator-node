@@ -1,6 +1,7 @@
 import { Router, Request } from 'express';
 import { isNil } from 'lodash';
 import { isSupportedCurrency, convertCurrency, SupportedCurrency } from './rate.service';
+import { clearCache } from './rate.cache';
 
 const currencyRouter = Router();
 
@@ -48,5 +49,9 @@ function parseRequestParams(req: Request): { from: SupportedCurrency; to: Suppor
   }
   throw errorFields;
 }
+
+currencyRouter.delete('/cache', () => {
+  clearCache();
+});
 
 export { currencyRouter };
